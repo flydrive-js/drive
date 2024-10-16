@@ -411,11 +411,13 @@ export class S3Driver implements DriverContract {
      */
     if (this.#client.config.endpoint) {
       const endpoint = await this.#client.config.endpoint()
+      let baseUrl = `${endpoint.protocol}//${endpoint.hostname}`
 
-      return new URL(
-        `/${this.options.bucket}/${key}`,
-        `${endpoint.protocol}//${endpoint.hostname}`
-      ).toString()
+      if (endpoint.port) {
+        baseUrl += `:${endpoint.port}`
+      }
+
+      return new URL(`/${this.options.bucket}/${key}`, baseUrl).toString()
     }
 
     /**
